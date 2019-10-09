@@ -45,10 +45,12 @@ class BaseParticle(metaclass=ABCMeta):
 
 	@abstractmethod
 	def evolve(self, *args):
+
 		pass
 	
 	@abstractmethod
 	def correct(self, *args):
+
 		pass
 
 
