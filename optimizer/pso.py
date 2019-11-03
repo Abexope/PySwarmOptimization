@@ -190,12 +190,24 @@ class ParticleSwarmOptimization2(BasePSO):
 			return fun(self.swarm.position)
 
 	def __update_pbest(self):
+		# if self.opt_mode == "minimum":
+		# 	self.pbest_fitness = np.minimum(self.fitness, self.pbest_fitness)
+		# 	self.swarm.pbest[self.fitness < self.pbest_fitness] = self.swarm.position[self.fitness < self.pbest_fitness]
+		# else:
+		# 	self.pbest_fitness = np.maximum(self.fitness, self.pbest_fitness)
+		# 	self.swarm.pbest[self.fitness > self.pbest_fitness] = self.swarm.position[self.fitness > self.pbest_fitness]
 		if self.opt_mode == "minimum":
-			self.pbest_fitness = np.minimum(self.fitness, self.pbest_fitness)
-			self.swarm.pbest[self.fitness < self.pbest_fitness] = self.swarm.position[self.fitness < self.pbest_fitness]
+			for j in range(self.population_size):
+				# print(j)
+				# print(self.pbest_fitness[j])
+				self.pbest_fitness[j], self.swarm.pbest[j] = \
+					(self.fitness[j], self.swarm.position[j]) if self.fitness[j] < self.pbest_fitness[j] \
+					else (self.pbest_fitness[j], self.swarm.pbest[j])
 		else:
-			self.pbest_fitness = np.maximum(self.fitness, self.pbest_fitness)
-			self.swarm.pbest[self.fitness > self.pbest_fitness] = self.swarm.position[self.fitness > self.pbest_fitness]
+			for j in range(self.population_size):
+				self.pbest_fitness[j], self.swarm.pbest[j] = \
+					(self.fitness[j], self.swarm.position[j]) if self.fitness[j] > self.pbest_fitness[j] \
+					else (self.pbest_fitness[j], self.swarm.pbest[j])
 
 	def __update_gbest(self):
 		if self.opt_mode == "minimum":

@@ -164,10 +164,6 @@ class Particle(BaseParticle):
 		:param args:
 		:return:
 		"""
-		# self.position[self.position > self.upper] = self.upper[self.position > self.upper]
-		# self.position[self.position < self.lower] = self.lower[self.position < self.lower]
-		# self.velocity[self.velocity > self.V_max] = self.V_max[self.velocity > self.V_max]
-		# self.velocity[self.velocity < self.V_min] = self.V_min[self.velocity < self.V_min]
 		self.position = np.minimum(self.position, self.upper)
 		self.position = np.maximum(self.position, self.lower)
 		self.velocity = np.minimum(self.velocity, self.V_max)
@@ -211,6 +207,7 @@ class ParticleSwarm(BaseSwarm):
 		self.velocity = self.velocity \
 			+ self.c1 * uniform(0, 1, size=(self.population, self.D)) * (self.pbest - self.position) \
 			+ self.c2 * uniform(0, 1, size=(self.population, self.D)) * (gbest - self.position)
+		self.__correct()
 		self.position = self.position + self.velocity      # update position
 		self.__correct()        # correct position
 

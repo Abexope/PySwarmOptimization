@@ -41,7 +41,7 @@ def demo_pso2():
 	V_max = [1, 1]
 	V_min = [-1, -1]
 	swarm = ParticleSwarm(D, pop_size, pop_max, pop_min, V_max, V_min)
-	pso = PSO2(epoch=max_iter, evaluator=FitnessFunction2, swarm=swarm)
+	pso = PSO2(epoch=max_iter, evaluator=FitnessFunction2, swarm=swarm, population_size=pop_size)
 	pso.search()
 
 	plt.figure()
