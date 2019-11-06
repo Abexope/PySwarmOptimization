@@ -218,14 +218,55 @@ class ParticleSwarm(BaseSwarm):
 		self.velocity = np.maximum(self.velocity, self.V_min)
 
 
+class ParticleSwarm2:
+	
+	def __init__(
+			self, dimension: int, population: int,
+			upper_bound: np.ndarray, lower_bound: np.ndarray,
+			upper_velocity: np.ndarray, lower_velocity: np.ndarray,
+			acceleration_coeff1=2., acceleration_coeff2=2.,
+	):
+		self.D = dimension
+		self.population = population
+		self.upper = upper_bound
+		self.lower = lower_bound
+		self.V_max = upper_velocity
+		self.V_min = lower_velocity
+		self.c1 = acceleration_coeff1
+		self.c2 = acceleration_coeff2
+		
+		self.position = self.lower + (self.upper - self.lower) * uniform(0, 1, size=[self.population, self.D])
+		self.velocity = self.V_min + (self.V_max - self.V_min) * uniform(0, 1, size=[self.population, self.D])
+		
+		self.pbest = self.position
+		self.gbest = None
+		
+	def _correct_position(self):
+		self.position = np.maximum(self.position, self.lower)
+		self.position = np.minimum(self.position, self.upper)
+		
+	def _correct_velocity(self):
+		self.velocity = np.maximum(self.velocity, self.V_min)
+		self.velocity = np.minimum(self.velocity, self.V_max)
+	
+	def evolve(self, gbest: np.ndarray):
+		self.gbest = gbest
+		self.velocity = self.velocity \
+			+ self.c1 * uniform(0, 1) * (self.pbest - self.position) \
+			+ self.c2 * uniform(0, 1) * (self.gbest - self.position)
+		self._correct_velocity()
+		self.position = self.position + self.velocity
+		self._correct_position()
+
+
 if __name__ == '__main__':
 	"""
 	Debug in 9/27/2019: instantiation of object
 	p = Particle(dimension=2, upper_bound=np.array([1, 1]), lower_bound=np.array([0, 0]))
 	print(p.D, p.upper, p.lower)
 	"""
-	p = Particle(
-		dimension=2, upper_bound=np.array([1, 1]), lower_bound=np.array([0, 0]),
+	p = ParticleSwarm2(
+		dimension=2, population=100, upper_bound=np.array([1, 1]), lower_bound=np.array([0, 0]),
 		upper_velocity=np.array([-1, -1]), lower_velocity=np.array([1, 1]))
 	print(p.D, p.upper, p.lower, p.position, p.velocity)
 	pass
