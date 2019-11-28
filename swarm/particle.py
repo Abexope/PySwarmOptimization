@@ -43,16 +43,3 @@ class ParticleSwarm:
 		self._correct_velocity()
 		self.position = self.position + self.velocity
 		self._correct_position()
-
-
-if __name__ == '__main__':
-	"""
-	Debug in 9/27/2019: instantiation of object
-	p = Particle(dimension=2, upper_bound=np.array([1, 1]), lower_bound=np.array([0, 0]))
-	print(p.D, p.upper, p.lower)
-	"""
-	p = ParticleSwarm(
-		dimension=2, population=100, upper_bound=np.array([1, 1]), lower_bound=np.array([0, 0]),
-		upper_velocity=np.array([-1, -1]), lower_velocity=np.array([1, 1]))
-	print(p.D, p.upper, p.lower, p.position, p.velocity)
-	pass
