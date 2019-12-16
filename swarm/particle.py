@@ -100,7 +100,7 @@ class RevisedQuantumParticleSwarm(Swarm):
 		self.position = np.maximum(self.position, self.lower)
 		self.position = np.minimum(self.position, self.upper)
 
-	def evolve(self, alpha=.36, beta=.36):
+	def evolve(self, alpha=.4, beta=.4):
 		mean_best = self.pbest.mean(axis=0)     # 平均最好位置
 		phi = uniform(0, 1, size=(self.population, self.D))     # 收敛因子
 		p = phi * self.pbest + (1 - phi) * self.gbest

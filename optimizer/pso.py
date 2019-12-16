@@ -2,7 +2,7 @@
 PSO and improvement algorithms are defined in this py-file
 """
 
-from swarm.particle import ParticleSwarm, QuantumParticleSwarm, RevisedQuantumParticleSwarm
+from swarm.particle import *
 import numpy as np
 
 
