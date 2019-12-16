@@ -6,7 +6,7 @@ from swarm.particle import ParticleSwarm, QuantumParticleSwarm, RevisedQuantumPa
 import numpy as np
 
 
-class ParticleSwarmOptimization:
+class ParticleSwarmOptimizer:
 
 	def __init__(
 			self, dimension: int, population_size: int, epoch: int,
@@ -51,7 +51,7 @@ class ParticleSwarmOptimization:
 			self.yy.append(self.gbest_fitness)
 
 
-class QuantumParticleSwarmOptimization:
+class QuantumParticleSwarmOptimizer:
 
 	def __init__(
 			self, dimension: int, population_size: int, epoch: int,
@@ -86,15 +86,14 @@ class QuantumParticleSwarmOptimization:
 
 	def search(self):
 		for epc in range(self.epoch):
-			self.swarm.evolve(alpha=0.72)  # swarm evolution
+			self.swarm.evolve()  # swarm evolution
 			self.fitness = self.evaluator.infer(self.swarm.position)  # update fitness value
 			self._update_pbest()  # update personal best position and fitness value for each individual
 			self._update_gbest()  # update global best position and fitness value
 			self.yy.append(self.gbest_fitness)
-		pass
 
 
-class RevisedQuantumParticleSwarmOptimization:
+class RevisedQuantumParticleSwarmOptimizer:
 
 	def __init__(
 			self, dimension: int, population_size: int, epoch: int,
@@ -129,9 +128,8 @@ class RevisedQuantumParticleSwarmOptimization:
 
 	def search(self):
 		for epc in range(self.epoch):
-			self.swarm.evolve(alpha=0.36, beta=0.36)  # swarm evolution
+			self.swarm.evolve()  # swarm evolution
 			self.fitness = self.evaluator.infer(self.swarm.position)  # update fitness value
 			self._update_pbest()  # update personal best position and fitness value for each individual
 			self._update_gbest()  # update global best position and fitness value
 			self.yy.append(self.gbest_fitness)
-		pass

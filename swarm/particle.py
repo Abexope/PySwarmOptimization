@@ -53,12 +53,12 @@ class ParticleSwarm(BasicSwarm):
 		self.velocity = np.maximum(self.velocity, self.V_min)
 		self.velocity = np.minimum(self.velocity, self.V_max)
 	
-	def evolve(self):
+	def evolve(self, weight=1.):
 		self.velocity = self.velocity \
 			+ self.c1 * uniform(0, 1) * (self.pbest - self.position) \
 			+ self.c2 * uniform(0, 1) * (self.gbest - self.position)
 		self._correct_velocity()
-		self.position = self.position + self.velocity
+		self.position = self.position + weight * self.velocity
 		self._correct_position()
 
 
@@ -76,7 +76,7 @@ class QuantumParticleSwarm(BasicSwarm):
 		self.position = np.maximum(self.position, self.lower)
 		self.position = np.minimum(self.position, self.upper)
 
-	def evolve(self, alpha: float):
+	def evolve(self, alpha=1):
 		mean_best = self.pbest.mean(axis=0)  # 平均最好位置
 		phi = uniform(0, 1, size=(self.population, self.D))  # 收敛因子
 		p = phi * self.pbest + (1 - phi) * self.gbest
@@ -100,7 +100,7 @@ class RevisedQuantumParticleSwarm(BasicSwarm):
 		self.position = np.maximum(self.position, self.lower)
 		self.position = np.minimum(self.position, self.upper)
 
-	def evolve(self, alpha: float, beta: float):
+	def evolve(self, alpha=0.36, beta=0.36):
 		mean_best = self.pbest.mean(axis=0)     # 平均最好位置
 		phi = uniform(0, 1, size=(self.population, self.D))     # 收敛因子
 		p = phi * self.pbest + (1 - phi) * self.gbest

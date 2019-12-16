@@ -4,9 +4,9 @@ test demo
 
 import numpy as np
 from optimizer.pso import (
-	ParticleSwarmOptimization as PSO,
-	QuantumParticleSwarmOptimization as QPSO,
-	RevisedQuantumParticleSwarmOptimization as RQPSO,
+	ParticleSwarmOptimizer as PSO,
+	QuantumParticleSwarmOptimizer as QPSO,
+	RevisedQuantumParticleSwarmOptimizer as RQPSO,
 )
 from evaluator.base import FitnessFunction2
 import matplotlib.pyplot as plt
