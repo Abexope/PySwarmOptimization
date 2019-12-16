@@ -86,7 +86,7 @@ class QuantumParticleSwarmOptimization:
 
 	def search(self):
 		for epc in range(self.epoch):
-			self.swarm.evolve(alpha=1)  # swarm evolution
+			self.swarm.evolve(alpha=0.72)  # swarm evolution
 			self.fitness = self.evaluator.infer(self.swarm.position)  # update fitness value
 			self._update_pbest()  # update personal best position and fitness value for each individual
 			self._update_gbest()  # update global best position and fitness value
@@ -129,7 +129,7 @@ class RevisedQuantumParticleSwarmOptimization:
 
 	def search(self):
 		for epc in range(self.epoch):
-			self.swarm.evolve(alpha=1, beta=1)  # swarm evolution
+			self.swarm.evolve(alpha=0.36, beta=0.36)  # swarm evolution
 			self.fitness = self.evaluator.infer(self.swarm.position)  # update fitness value
 			self._update_pbest()  # update personal best position and fitness value for each individual
 			self._update_gbest()  # update global best position and fitness value
