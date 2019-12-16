@@ -3,9 +3,7 @@ test demo
 """
 
 import numpy as np
-from swarm.particle import ParticleSwarm, QuantumParticleSwarm, RevisedQuantumParticleSwarm
 from optimizer.pso import Optimizer
-
 from evaluator.base import FitnessFunction2
 import matplotlib.pyplot as plt
 
@@ -19,85 +17,73 @@ class Timer:
 	def __call__(self, *args, **kwargs):
 		from time import time
 		t = time()
-		self.func()
+		self.func(*args, **kwargs)
 		print("duration: {:.4f}".format(time() - t))
 
 
 @Timer
-def demo_pso1():
-	D = 2
-	pop_size = 50
-	max_iter = 100000
-	pop_max = np.array([10, 10])
-	pop_min = np.array([-10, -10])
-	V_max = np.array([1, 1])
-	V_min = np.array([-1, -1])
+def particle_swarm_opt(D, pop_size, max_iter, pop_max, pop_min, V_max, V_min, fitness_function, weight=None):
+	from swarm.particle import ParticleSwarm
 	
-	swarm = ParticleSwarm(D, pop_size, pop_max, pop_min, V_max, V_min)
-	pso = Optimizer(max_iter, swarm, FitnessFunction2)
-	pso.search()
-
-	plt.figure(figsize=(4, 3))
-	plt.loglog(range(max_iter), pso.yy)
-	plt.title('pso')
+	swarm = ParticleSwarm(D, pop_size, pop_max, pop_min, V_max, V_min)      # 种群初始化
+	opt = Optimizer(max_iter, swarm, fitness_function)                      # 优化器初始化
+	if weight:
+		opt.search(weight)      # 优化迭代
+	else:
+		opt.search()
+	
+	plt.figure(figsize=(5, 3))          # 结果可视化
+	plt.loglog(range(max_iter), opt.yy)
+	plt.title('PSO')
 	plt.grid()
-	# plt.ylim([1e-10, 0.1])
-
-	# plt.show()
 
 
 @Timer
-def demo_pso2():
-	D = 2
-	pop_size = 50
-	max_iter = 100000
-	pop_max = np.array([10, 10])
-	pop_min = np.array([-10, -10])
+def quantum_particle_swarm_opt(D, pop_size, max_iter, pop_max, pop_min, fitness_function, alpha=None):
+	from swarm.particle import QuantumParticleSwarm
 	
 	swarm = QuantumParticleSwarm(D, pop_size, pop_max, pop_min)
-	pso = Optimizer(max_iter, swarm, evaluator=FitnessFunction2)
-	pso.search()
-
-	plt.figure(figsize=(4, 3))
-	plt.loglog(range(max_iter), pso.yy)
-	plt.title('qpso')
+	opt = Optimizer(max_iter, swarm, fitness_function)
+	if alpha:
+		opt.search(alpha)
+	else:
+		opt.search()
+	
+	plt.figure(figsize=(5, 3))
+	plt.loglog(range(max_iter), opt.yy)
+	plt.title('QPSO')
 	plt.grid()
-	# plt.ylim([1e-10, 0.1])
-
-	# plt.show()
 
 
 @Timer
-def demo_pso3():
-	D = 2
-	pop_size = 50
-	max_iter = 100000
-	pop_max = np.array([10, 10])
-	pop_min = np.array([-10, -10])
+def revised_quantum_particle_opt(D, pop_size, max_iter, pop_max, pop_min, fitness_function, alpha=None, beta=None):
+	from swarm.particle import RevisedQuantumParticleSwarm
 	
 	swarm = RevisedQuantumParticleSwarm(D, pop_size, pop_max, pop_min)
-	pso = Optimizer(max_iter, swarm, evaluator=FitnessFunction2)
-	pso.search()
-
-	plt.figure(figsize=(4, 3))
-	plt.loglog(range(max_iter), pso.yy)
-	plt.title('rqpso')
+	opt = Optimizer(max_iter, swarm, evaluator=fitness_function)
+	if alpha and beta:
+		opt.search(alpha, beta)
+	else:
+		opt.search()
+	plt.figure(figsize=(5, 3))
+	plt.loglog(range(max_iter), opt.yy)
+	plt.title('RQPSO')
 	plt.grid()
-	# plt.ylim([1e-10, 0.1])
-
-	# plt.show()
 
 
 if __name__ == '__main__':
-	# import time
-	#
-	# t1 = time.time()
-	# for _ in range(100):
-	# 	demo_pso1()
-	# print((time.time() - t1) / 100)
+	# 超参数配置
+	D_ = 2
+	pop_size_ = 50
+	max_iter_ = 100000
+	pop_max_ = np.array([10, 10])
+	pop_min_ = np.array([-10, -10])
+	V_max_ = np.array([1, 1])
+	V_min_ = np.array([-1, -1])
+	evaluator = FitnessFunction2
 
-	demo_pso1()
-	demo_pso2()
-	demo_pso3()
+	particle_swarm_opt(D_, pop_size_, max_iter_, pop_max_, pop_min_, V_max_, V_min_, evaluator)
+	quantum_particle_swarm_opt(D_, pop_size_, max_iter_, pop_max_, pop_min_, evaluator)
+	revised_quantum_particle_opt(D_, pop_size_, max_iter_, pop_max_, pop_min_, evaluator)
 
 	plt.show()
