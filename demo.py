@@ -80,8 +80,8 @@ if __name__ == '__main__':
 	# 	demo_pso1()
 	# print((time.time() - t1) / 100)
 
-	# demo_pso1()
-	# demo_pso2()
+	demo_pso1()
+	demo_pso2()
 	demo_pso3()
 
 	plt.show()
