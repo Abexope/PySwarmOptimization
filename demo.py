@@ -10,6 +10,20 @@ from evaluator.base import FitnessFunction2
 import matplotlib.pyplot as plt
 
 
+class Timer:
+	"""Clock decorator"""
+	
+	def __init__(self, func):
+		self.func = func
+	
+	def __call__(self, *args, **kwargs):
+		from time import time
+		t = time()
+		self.func()
+		print("duration: {:.4f}".format(time() - t))
+
+
+@Timer
 def demo_pso1():
 	D = 2
 	pop_size = 50
@@ -32,6 +46,7 @@ def demo_pso1():
 	# plt.show()
 
 
+@Timer
 def demo_pso2():
 	D = 2
 	pop_size = 50
@@ -52,6 +67,7 @@ def demo_pso2():
 	# plt.show()
 
 
+@Timer
 def demo_pso3():
 	D = 2
 	pop_size = 50
