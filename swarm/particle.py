@@ -7,7 +7,7 @@ import numpy as np
 from numpy.random import uniform, randn
 
 
-class BasicSwarm(metaclass=ABCMeta):
+class Swarm(metaclass=ABCMeta):
 	
 	@abstractmethod
 	def __init__(
@@ -28,7 +28,7 @@ class BasicSwarm(metaclass=ABCMeta):
 		pass
 
 
-class ParticleSwarm(BasicSwarm):
+class ParticleSwarm(Swarm):
 	
 	def __init__(
 			self, dimension: int, population: int,
@@ -62,7 +62,7 @@ class ParticleSwarm(BasicSwarm):
 		self._correct_position()
 
 
-class QuantumParticleSwarm(BasicSwarm):
+class QuantumParticleSwarm(Swarm):
 
 	def __init__(
 			self, dimension: int, population: int,
@@ -76,7 +76,7 @@ class QuantumParticleSwarm(BasicSwarm):
 		self.position = np.maximum(self.position, self.lower)
 		self.position = np.minimum(self.position, self.upper)
 
-	def evolve(self, alpha=1):
+	def evolve(self, alpha=1.):
 		mean_best = self.pbest.mean(axis=0)  # 平均最好位置
 		phi = uniform(0, 1, size=(self.population, self.D))  # 收敛因子
 		p = phi * self.pbest + (1 - phi) * self.gbest
@@ -86,7 +86,7 @@ class QuantumParticleSwarm(BasicSwarm):
 		self._correct_position()
 
 
-class RevisedQuantumParticleSwarm(BasicSwarm):
+class RevisedQuantumParticleSwarm(Swarm):
 
 	def __init__(
 			self, dimension: int, population: int,
@@ -100,7 +100,7 @@ class RevisedQuantumParticleSwarm(BasicSwarm):
 		self.position = np.maximum(self.position, self.lower)
 		self.position = np.minimum(self.position, self.upper)
 
-	def evolve(self, alpha=0.36, beta=0.36):
+	def evolve(self, alpha=.36, beta=.36):
 		mean_best = self.pbest.mean(axis=0)     # 平均最好位置
 		phi = uniform(0, 1, size=(self.population, self.D))     # 收敛因子
 		p = phi * self.pbest + (1 - phi) * self.gbest
