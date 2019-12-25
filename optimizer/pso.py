@@ -28,10 +28,9 @@ class Optimizer:
 		self.yy = []
 	
 	def _update_pbest(self):
-		for j in range(self.swarm.population):
-			self.pbest_fitness[j], self.swarm.pbest[j] = (self.fitness[j], self.swarm.position[j]) \
-				if self.fitness[j] < self.pbest_fitness[j] \
-				else (self.pbest_fitness[j], self.swarm.pbest[j])
+		i = np.where(self.fitness < self.pbest_fitness)
+		self.swarm.pbest[i] = self.swarm.position[i]
+		self.pbest_fitness[i] = self.fitness[i]
 	
 	def _update_gbest(self):
 		i = np.argmin(self.pbest_fitness)
