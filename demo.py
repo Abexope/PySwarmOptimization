@@ -28,9 +28,9 @@ def particle_swarm_opt(D, pop_size, max_iter, pop_max, pop_min, V_max, V_min, fi
 	swarm = ParticleSwarm(D, pop_size, pop_max, pop_min, V_max, V_min)      # 种群初始化
 	opt = Optimizer(max_iter, swarm, fitness_function)                      # 优化器初始化
 	if weight:
-		opt.search(weight)      # 优化迭代
+		opt.fit(weight)      # 优化迭代
 	else:
-		opt.search()
+		opt.fit()
 	
 	plt.figure(figsize=(5, 3))          # 结果可视化
 	plt.loglog(range(max_iter), opt.yy)
@@ -45,9 +45,9 @@ def quantum_particle_swarm_opt(D, pop_size, max_iter, pop_max, pop_min, fitness_
 	swarm = QuantumParticleSwarm(D, pop_size, pop_max, pop_min)
 	opt = Optimizer(max_iter, swarm, fitness_function)
 	if alpha:
-		opt.search(alpha)
+		opt.fit(alpha)
 	else:
-		opt.search()
+		opt.fit()
 	
 	plt.figure(figsize=(5, 3))
 	plt.loglog(range(max_iter), opt.yy)
@@ -62,9 +62,9 @@ def revised_quantum_particle_opt(D, pop_size, max_iter, pop_max, pop_min, fitnes
 	swarm = RevisedQuantumParticleSwarm(D, pop_size, pop_max, pop_min)
 	opt = Optimizer(max_iter, swarm, evaluator=fitness_function)
 	if alpha and beta:
-		opt.search(alpha, beta)
+		opt.fit(alpha, beta)
 	else:
-		opt.search()
+		opt.fit()
 	plt.figure(figsize=(5, 3))
 	plt.loglog(range(max_iter), opt.yy)
 	plt.title('RQPSO')

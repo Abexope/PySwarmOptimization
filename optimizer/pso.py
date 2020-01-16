@@ -37,7 +37,7 @@ class Optimizer:
 		self.swarm.gbest = self.swarm.position[i]
 		self.gbest_fitness = self.pbest_fitness[i]
 	
-	def search(self, *args):
+	def fit(self, *args):
 		for epc in range(self.epoch):
 			self.swarm.evolve(*args)                                    # swarm evolution
 			self.fitness = self.evaluator.infer(self.swarm.position)    # update fitness value
