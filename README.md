@@ -22,9 +22,9 @@ $$
 
 - 全局最优收敛过程示意
 
-![](.\doc\gbest.gif)
+![](.\doc\gbest.png)
 
 - 种群搜索过程示意
 
-![](.\doc\pbest.gif)
+![](.\doc\pbest.png)
 
