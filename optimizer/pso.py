@@ -3,6 +3,7 @@ PSO and improvement algorithms are defined in this py-file
 """
 
 from swarm.particle import *
+from support.recorder import Recorder
 import numpy as np
 
 
@@ -11,7 +12,7 @@ class Optimizer:
 	def __init__(
 			self, epoch: int,
 			swarm: (ParticleSwarm, QuantumParticleSwarm, RevisedQuantumParticleSwarm),
-			evaluator,
+			evaluator, is_record=True,
 	):
 		self.epoch = epoch
 		self.evaluator = evaluator
@@ -26,7 +27,10 @@ class Optimizer:
 		self.gbest_fitness = np.min(self.fitness)
 		
 		self.yy = []
-	
+		self.is_record = is_record
+		if is_record:
+			self.recoder = Recorder(self.epoch, self.swarm.population, self.swarm.D)  # 迭代记录器
+
 	def _update_pbest(self):
 		i = np.where(self.fitness < self.pbest_fitness)
 		self.swarm.pbest[i] = self.swarm.position[i]
@@ -43,4 +47,10 @@ class Optimizer:
 			self.fitness = self.evaluator.infer(self.swarm.position)    # update fitness value
 			self._update_pbest()        # update personal best position and fitness value for each individual
 			self._update_gbest()        # update global best position and fitness value
+
+			"""迭代记录接口"""
+			if self.is_record:
+				self.recoder.pbest_rec.record(epc, self.swarm.pbest)
+				self.recoder.gbest_rec.record(epc, self.swarm.gbest)
+				self.recoder.fitness_rec.record(epc, self.gbest_fitness)
 			self.yy.append(self.gbest_fitness)
