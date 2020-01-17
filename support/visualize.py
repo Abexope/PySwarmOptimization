@@ -107,8 +107,8 @@ class GbestVisual:
 			init_func=self._init_func, blit=False, repeat=False, interval=10
 		)
 		# plt.tight_layout()
-		_ani.save('gbest.gif', fps=30)
-		# plt.show()
+		# _ani.save('gbest.gif', fps=30)
+		plt.show()
 
 
 class PbestVisual:
@@ -206,5 +206,5 @@ class PbestVisual:
 			init_func=self._init_func, blit=False, repeat=False, interval=10
 		)
 		# plt.tight_layout()
-		_ani.save("pbest.gif", fps=30)
-		# plt.show()
+		# _ani.save("pbest.gif", fps=30)
+		plt.show()
