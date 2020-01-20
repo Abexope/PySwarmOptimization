@@ -30,8 +30,8 @@ class GbestVisual:
 		self.fit_ax = self._fig.add_subplot(self._gs[:, :2])  # 全局最优适应度值收敛过程
 		self.fit_ln = [
 			self.fit_ax.semilogy(
-				[], [], linestyle='--', animated=False, alpha=0.9, label='alg {}'.format(i + 1)
-			)[0] for i in range(3)
+				[], [], linestyle='--', animated=False, alpha=0.9, label=alg_rec.name
+			)[0] for alg_rec in self._fit_recoder
 		]
 		plt.legend(loc='lower left')
 		
@@ -174,26 +174,26 @@ class PbestVisual:
 			self.alg1_ax.set_ylim(-1e-1, 1e-1)
 			self.alg2_ax.set_xlim(-1e-5, 1e-5)
 			self.alg2_ax.set_ylim(-1e-5, 1e-5)
-			self.alg3_ax.set_xlim(-1e-20, 1e-20)
-			self.alg3_ax.set_ylim(-1e-20, 1e-20)
+			self.alg3_ax.set_xlim(-1e-50, 1e-50)
+			self.alg3_ax.set_ylim(-1e-50, 1e-50)
 		elif epc < 1000:
 			self.alg1_ax.set_xlim(-1E-2, 1E-2)
 			self.alg1_ax.set_ylim(-1E-2, 1E-2)
 			self.alg2_ax.set_xlim(-1E-20, 1E-20)
 			self.alg2_ax.set_ylim(-1e-20, 1e-20)
-			self.alg3_ax.set_xlim(-1e-50, 1e-50)
-			self.alg3_ax.set_ylim(-1e-50, 1e-50)
+			self.alg3_ax.set_xlim(-1e-100, 1e-100)
+			self.alg3_ax.set_ylim(-1e-100, 1e-100)
 		else:
 			self.alg1_ax.set_xlim(-1e-2, 1e-2)
 			self.alg1_ax.set_ylim(-1e-2, 1e-2)
-			self.alg2_ax.set_xlim(-1e-30, 1e-30)
-			self.alg2_ax.set_ylim(-1e-30, 1e-30)
-			self.alg3_ax.set_xlim(-1e-300, 1e-300)
-			self.alg3_ax.set_ylim(-1e-300, 1e-300)
+			self.alg2_ax.set_xlim(-1e-60, 1e-60)
+			self.alg2_ax.set_ylim(-1e-60, 1e-60)
+			self.alg3_ax.set_xlim(-1e-150, 1e-150)
+			self.alg3_ax.set_ylim(-1e-150, 1e-150)
 		
-		self.alg1_ax.set_title('alg1 {}'.format(epc))
-		self.alg2_ax.set_title('alg2 {}'.format(epc))
-		self.alg3_ax.set_title('alg3 {}'.format(epc))
+		self.alg1_ax.set_title('{} {}'.format(self._pbest_recoder[0].name, epc))
+		self.alg2_ax.set_title('{} {}'.format(self._pbest_recoder[1].name, epc))
+		self.alg3_ax.set_title('{} {}'.format(self._pbest_recoder[2].name, epc))
 		
 		self.alg1_ln.set_data(self._pbest_recoder[0].doc[epc, :, 0], self._pbest_recoder[0].doc[epc, :, 1])
 		self.alg2_ln.set_data(self._pbest_recoder[1].doc[epc, :, 0], self._pbest_recoder[1].doc[epc, :, 1])

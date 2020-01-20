@@ -10,10 +10,14 @@ class BaseRecorder(metaclass=ABCMeta):
 	"""迭代搜素信息记录"""
 	
 	@abstractmethod
-	def __init__(self, epoch: int):
+	def __init__(self, alg_name: str, epoch: int):
+		self._name = alg_name
 		self._epoch = epoch
 		self._doc = None
-	
+
+	@property
+	def name(self): return self._name
+
 	@property
 	def epoch(self): return self._epoch
 	
@@ -28,8 +32,8 @@ class BaseRecorder(metaclass=ABCMeta):
 class PbestRecorder(BaseRecorder):
 	"""个体历史最优记录"""
 	
-	def __init__(self, epoch: int, population: int, dimension: int):
-		super(PbestRecorder, self).__init__(epoch)
+	def __init__(self, alg_name: str, epoch: int, population: int, dimension: int):
+		super(PbestRecorder, self).__init__(alg_name, epoch)
 		self._N = population  # 种群规模记录
 		self._D = dimension  # 空间维度
 		self._doc = np.zeros(shape=(self.epoch, self.N, self.D))  # 存储空间预分配
@@ -48,8 +52,8 @@ class PbestRecorder(BaseRecorder):
 class GbestRecorder(BaseRecorder):
 	"""全局最优位置记录"""
 	
-	def __init__(self, epoch, dimension):
-		super(GbestRecorder, self).__init__(epoch)
+	def __init__(self, alg_name: str, epoch: int, dimension: int):
+		super(GbestRecorder, self).__init__(alg_name, epoch)
 		self._D = dimension
 		self._doc = np.zeros((self.epoch, self.D))
 	
@@ -67,8 +71,8 @@ class GbestRecorder(BaseRecorder):
 class FitnessRecorder(BaseRecorder):
 	"""全局最优适应度值记录"""
 	
-	def __init__(self, epoch):
-		super(FitnessRecorder, self).__init__(epoch)
+	def __init__(self, alg_name: str, epoch: int):
+		super(FitnessRecorder, self).__init__(alg_name, epoch)
 		self._doc = np.zeros((self.epoch,))
 	
 	def record(self, epc, rec):
@@ -77,7 +81,7 @@ class FitnessRecorder(BaseRecorder):
 
 class Recorder:
 	
-	def __init__(self, epoch: int, N: int, D: int):
-		self.pbest_rec = PbestRecorder(epoch, N, D)
-		self.gbest_rec = GbestRecorder(epoch, D)
-		self.fitness_rec = FitnessRecorder(epoch)
+	def __init__(self, alg_name: str, epoch: int, N: int, D: int):
+		self.pbest_rec = PbestRecorder(alg_name, epoch, N, D)
+		self.gbest_rec = GbestRecorder(alg_name, epoch, D)
+		self.fitness_rec = FitnessRecorder(alg_name, epoch)

@@ -8,6 +8,7 @@ from numpy.random import uniform, randn
 
 
 class Swarm(metaclass=ABCMeta):
+	name = None
 	
 	@abstractmethod
 	def __init__(
@@ -42,6 +43,7 @@ class Swarm(metaclass=ABCMeta):
 
 
 class ParticleSwarm(Swarm):
+	name = "PSO"
 	
 	def __init__(
 			self, dimension: int, population: int,
@@ -93,6 +95,7 @@ class ParticleSwarm(Swarm):
 
 
 class QuantumParticleSwarm(Swarm):
+	name = "QPSO"
 
 	def __init__(
 			self, dimension: int, population: int,
@@ -119,6 +122,7 @@ class QuantumParticleSwarm(Swarm):
 
 
 class RevisedQuantumParticleSwarm(Swarm):
+	name = "RQPSO"
 
 	def __init__(
 			self, dimension: int, population: int,
