@@ -2,16 +2,43 @@
 搜索过程可视化
 """
 
+from .recorder import Recorder
+from abc import ABCMeta, abstractmethod
 import matplotlib.pyplot as plt
 import matplotlib.gridspec as mg
 from matplotlib.animation import FuncAnimation
-plt.style.use('ggplot')
+# plt.style.use('ggplot')
 
 
-class GbestVisual:
+class BaseVisual(metaclass=ABCMeta):
+	"""动态可视化模板类"""
+
+	@abstractmethod
+	def __init__(self, *args):
+		pass
+
+	@abstractmethod
+	def _plot_canvas(self, *args):
+		pass
+
+	@abstractmethod
+	def _init_func(self, *args):
+		pass
+
+	@abstractmethod
+	def _update(self, *args):
+		pass
+
+	@abstractmethod
+	def _visual(self, *args):
+		pass
+
+
+class GbestVisual(BaseVisual):
 	"""批量全局最优收敛过程可视化"""
 	
 	def __init__(self, loc_recoder: list, fit_recoder: list):
+		super(GbestVisual, self).__init__()
 		assert len(loc_recoder) == len(fit_recoder) == 3  # 可视化排版限制，仅限同时画3个算法的收敛过程
 		self._loc_recoder = loc_recoder
 		self._fit_recoder = fit_recoder
@@ -111,10 +138,11 @@ class GbestVisual:
 		plt.show()
 
 
-class PbestVisual:
+class PbestVisual(BaseVisual):
 	"""种群搜索过程可视化，仅在维度为 2 时可用"""
 	
 	def __init__(self, pbest_recoder: list):
+		super(PbestVisual, self).__init__()
 		assert len(pbest_recoder) == 3  # 限制不超过3个算法
 		for rec in pbest_recoder:
 			assert rec.doc.shape[-1] == 2  # 维度限制为 2
@@ -206,5 +234,143 @@ class PbestVisual:
 			init_func=self._init_func, blit=False, repeat=False, interval=10
 		)
 		# plt.tight_layout()
+		# _ani.save("pbest.gif", fps=30)
+		plt.show()
+
+
+class AlgorithmVisual(BaseVisual):
+	"""
+	单算法优化过程可视化
+	包括适应度值变化，每个维度的搜索变化，每个个体的坐标变化(仅限2D情况)
+	"""
+
+	def __init__(self, recorder: Recorder):
+		super(AlgorithmVisual, self).__init__()
+		self._recorder = recorder
+		self._plot_canvas()
+		self._visual()
+
+	@property
+	def epoch(self): return self._recorder.epoch
+
+	@property
+	def N(self): return self._recorder.N
+
+	@property
+	def D(self): return self._recorder.D
+
+	@property
+	def fitness(self): return self._recorder.fitness_rec.doc
+
+	@property
+	def gbest(self): return self._recorder.gbest_rec.doc
+
+	@property
+	def pbest(self): return self._recorder.pbest_rec.doc
+
+	def _plot_canvas(self):
+		self._fig = plt.figure(figsize=(16, 8))
+		if self.D == 2:     # 2-D 情况可以画粒子的位置变化
+			self._gs = mg.GridSpec(2, 2)
+
+			# 子图1：适应度值变化
+			self.fit_ax = self._fig.add_subplot(self._gs[0, 1])  # 全局最优适应度值收敛过程
+			self.fit_ln, = self.fit_ax.semilogy(
+				[], [], linestyle='--', animated=False, alpha=0.9,
+			)
+
+			# 子图2：每个维度的收敛过程
+			self.dim_ax = self._fig.add_subplot(self._gs[1, 1])
+			self.dim_ln = [
+				self.dim_ax.plot(
+					[], [], linestyle='-', marker='.', animated=False,
+					label='dim {}'.format(i + 1), alpha=0.2
+				)[0] for i in range(self.D)
+			]
+			plt.legend()
+
+			# 子图3：种群收敛过程可视化
+			self.swarm_ax = self._fig.add_subplot(self._gs[:, 0])
+			self.swarm_ln, = self.swarm_ax.plot(
+				[], [], linestyle=' ', marker='.', animated=False, alpha=0.9,
+			)
+
+			return self.fit_ln, self.dim_ln, self.swarm_ln
+
+		else:       # 非 2-D 情况仅可视化适应度值和每个维度的变化
+			# 子图1：适应度值变化
+			self.fit_ax = self._fig.add_subplot(121)
+			self.fit_ln, = self.fit_ax.semilogy(
+				[], [], linestyle='-', animated=False, alpha=0.9,
+			)
+
+			# 子图2：每个维度的收敛过程
+			self.dim_ax = self._fig.add_subplot(122)
+			self.dim_ln = [
+				self.dim_ax.plot(
+					[], [], linestyle='--', marker='.', animated=False,
+					label='dim {}'.format(i + 1), alpha=0.4,
+				)[0] for i in range(self.D)
+			]
+			plt.legend()
+
+			return self.fit_ln, self.dim_ln,
+
+	def _init_func(self):
+
+		plt.subplots_adjust(
+			top=0.952,
+			bottom=0.079,
+			left=0.057,
+			right=0.98,
+			hspace=0.22,
+			wspace=0.162
+		)
+
+		self.fit_ax.set_ylabel("Fitness", fontsize=14)
+		self.fit_ax.set_xlabel("Iteration", fontsize=14)
+		self.fit_ax.set_xlim(0, self.epoch)
+		self.fit_ax.set_ylim(1e-300, 1e2)
+		self.fit_ax.set_title(self._recorder.name, fontsize=14)
+		self.fit_ax.grid(True)
+
+		self.dim_ax.set_ylabel("Variable", fontsize=14)
+		self.dim_ax.set_xlabel("Iteration", fontsize=14)
+		self.dim_ax.set_xlim(0, self.epoch)
+		self.dim_ax.set_ylim(-1e1, 1e1)
+		self.dim_ax.grid(True)
+
+		if self.D == 2:
+			self.swarm_ax.set_title("Particle swarm position", fontsize=14)
+			self.swarm_ax.set_xlabel("x1", fontsize=14)
+			self.swarm_ax.set_ylabel("x2", fontsize=14)
+			self.swarm_ax.set_xlim(-1, 1)
+			self.swarm_ax.set_ylim(-1, 1)
+			# self.swarm_ax.grid(True)
+
+			self.swarm_ax.plot([-1, 1], [0, 0], linestyle='--', color='black', alpha=0.8)
+			self.swarm_ax.plot([0, 0], [-1, 1], linestyle='--', color='black', alpha=0.8)
+
+			return self.fit_ln, self.dim_ln, self.swarm_ln
+		else:
+			return self.fit_ln, self.dim_ln
+
+	def _update(self, epc):
+		self.fit_ln.set_data(range(epc), self.fitness[:epc])
+		for j, ln in enumerate(self.dim_ln):
+			ln.set_data(range(epc), self.gbest[:epc, j])
+
+		if self.D == 2:
+			self.swarm_ln.set_data(self.pbest[epc, :, 0], self.pbest[epc, :, 1])
+			return self.fit_ln, self.dim_ln, self.swarm_ln
+		else:
+			return self.fit_ln, self.dim_ln
+
+	def _visual(self):
+		_ani = FuncAnimation(
+			self._fig, self._update, frames=self.epoch,
+			init_func=self._init_func, blit=False, repeat=False, interval=10
+		)
+		plt.tight_layout()
 		# _ani.save("pbest.gif", fps=30)
 		plt.show()

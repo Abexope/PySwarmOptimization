@@ -12,7 +12,6 @@ def particle_swarm_opt(D, pop_size, max_iter, pop_max, pop_min, V_max, V_min, fi
 	
 	swarm = ParticleSwarm(D, pop_size, pop_max, pop_min, V_max, V_min)  # 种群初始化
 	opt = Optimizer(max_iter, swarm, fitness_function)  # 优化器初始化
-	print(opt.name)
 	if weight:
 		opt.fit(weight)  # 优化迭代
 	else:
@@ -58,11 +57,12 @@ if __name__ == '__main__':
 	evaluator = FitnessFunction2
 	
 	pso_rec = particle_swarm_opt(D_, pop_size_, max_iter_, pop_max_, pop_min_, V_max_, V_min_, evaluator)
-	qpso_rec = quantum_particle_swarm_opt(D_, pop_size_, max_iter_, pop_max_, pop_min_, evaluator)
-	rqpso_rec = revised_quantum_particle_opt(D_, pop_size_, max_iter_, pop_max_, pop_min_, evaluator)
+	# qpso_rec = quantum_particle_swarm_opt(D_, pop_size_, max_iter_, pop_max_, pop_min_, evaluator)
+	# rqpso_rec = revised_quantum_particle_opt(D_, pop_size_, max_iter_, pop_max_, pop_min_, evaluator)
 	
 	# GbestVisual(
 	# 	[pso_rec.gbest_rec, qpso_rec.gbest_rec, rqpso_rec.gbest_rec],
 	# 	[pso_rec.fitness_rec, qpso_rec.fitness_rec, rqpso_rec.fitness_rec]
 	# )
-	PbestVisual([pso_rec.pbest_rec, qpso_rec.pbest_rec, rqpso_rec.pbest_rec])
+	# PbestVisual([pso_rec.pbest_rec, qpso_rec.pbest_rec, rqpso_rec.pbest_rec])
+	AlgorithmVisual(pso_rec)
