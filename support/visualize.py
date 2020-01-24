@@ -254,10 +254,16 @@ class AlgorithmVisual(BaseVisual):
 	def epoch(self): return self._recorder.epoch
 
 	@property
+	def step(self): return self._recorder.rec_step
+
+	@property
 	def N(self): return self._recorder.N
 
 	@property
 	def D(self): return self._recorder.D
+
+	@property
+	def t(self): return self._recorder.t
 
 	@property
 	def fitness(self): return self._recorder.fitness_rec.doc
@@ -326,17 +332,16 @@ class AlgorithmVisual(BaseVisual):
 			hspace=0.22,
 			wspace=0.162
 		)
-
 		self.fit_ax.set_ylabel("Fitness", fontsize=14)
 		self.fit_ax.set_xlabel("Iteration", fontsize=14)
-		self.fit_ax.set_xlim(0, self.epoch)
+		self.fit_ax.set_xlim(0, self.epoch * self.step)   # ################### 整理 epoch 和 rec_step 的接口
 		self.fit_ax.set_ylim(1e-300, 1e2)
 		self.fit_ax.set_title(self._recorder.name, fontsize=14)
 		self.fit_ax.grid(True)
 
-		self.dim_ax.set_ylabel("Variable", fontsize=14)
+		self.dim_ax.set_ylabel("Global best", fontsize=14)
 		self.dim_ax.set_xlabel("Iteration", fontsize=14)
-		self.dim_ax.set_xlim(0, self.epoch)
+		self.dim_ax.set_xlim(0, self.epoch * self.step)
 		self.dim_ax.set_ylim(-1e1, 1e1)
 		self.dim_ax.grid(True)
 
@@ -356,9 +361,9 @@ class AlgorithmVisual(BaseVisual):
 			return self.fit_ln, self.dim_ln
 
 	def _update(self, epc):
-		self.fit_ln.set_data(range(epc), self.fitness[:epc])
+		self.fit_ln.set_data(self.t[:epc], self.fitness[:epc])
 		for j, ln in enumerate(self.dim_ln):
-			ln.set_data(range(epc), self.gbest[:epc, j])
+			ln.set_data(self.t[:epc], self.gbest[:epc, j])
 
 		if self.D == 2:
 			self.swarm_ln.set_data(self.pbest[epc, :, 0], self.pbest[epc, :, 1])

@@ -12,12 +12,12 @@ class Optimizer:
 	def __init__(
 			self, epoch: int,
 			swarm: (ParticleSwarm, QuantumParticleSwarm, RevisedQuantumParticleSwarm),
-			evaluator, is_record=True,
+			evaluator, is_record=True, rec_step=10
 	):
 		self._evaluator = evaluator
 		self._epoch = epoch
 		self._swarm = swarm
-		self._name = swarm.name
+		self._rec_step = rec_step       # 记录步长，默认为1
 		
 		self.fitness = self._evaluator.infer(self.swarm.position)
 		
@@ -30,7 +30,7 @@ class Optimizer:
 		self.yy = []
 		self.is_record = is_record
 		if is_record:
-			self.recoder = Recorder(self.name, self._epoch, self.swarm.population, self.swarm.D)  # 迭代记录器
+			self.recoder = Recorder(self.name, self._epoch // self.rec_step, self.swarm.population, self.swarm.D, self.rec_step)  # 迭代记录器
 
 	@property
 	def evaluator(self): return self._evaluator
@@ -39,7 +39,10 @@ class Optimizer:
 	def swarm(self): return self._swarm
 
 	@property
-	def name(self): return self._name
+	def name(self): return self.swarm.name
+
+	@property
+	def rec_step(self): return self._rec_step
 
 	def _update_pbest(self):
 		i = np.where(self.fitness < self.pbest_fitness)
@@ -59,7 +62,7 @@ class Optimizer:
 			self._update_gbest()        # update global best position and fitness value
 
 			"""迭代记录接口"""
-			if self.is_record:
+			if self.is_record and epc % self.rec_step == 0:
 				self.recoder.pbest_rec.record(epc, self.swarm.pbest)
 				self.recoder.gbest_rec.record(epc, self.swarm.gbest)
 				self.recoder.fitness_rec.record(epc, self.gbest_fitness)
