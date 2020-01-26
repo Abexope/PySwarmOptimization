@@ -12,7 +12,7 @@ class Optimizer:
 	def __init__(
 			self, epoch: int,
 			swarm: (ParticleSwarm, QuantumParticleSwarm, RevisedQuantumParticleSwarm),
-			evaluator, is_record=True, rec_step=10
+			evaluator, is_record=True, rec_step=50   # 需要满足 rec_step ≤ epoch 且能整除 epoch！！！
 	):
 		self._evaluator = evaluator
 		self._epoch = epoch

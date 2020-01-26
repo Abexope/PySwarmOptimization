@@ -2,12 +2,16 @@
 搜索过程可视化
 """
 
+from evaluator.base import FitnessFunction2
 from .recorder import Recorder
 from abc import ABCMeta, abstractmethod
+import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.gridspec as mg
 from matplotlib.animation import FuncAnimation
 # plt.style.use('ggplot')
+
+global bound
 
 
 class BaseVisual(metaclass=ABCMeta):
@@ -244,9 +248,10 @@ class AlgorithmVisual(BaseVisual):
 	包括适应度值变化，每个维度的搜索变化，每个个体的坐标变化(仅限2D情况)
 	"""
 
-	def __init__(self, recorder: Recorder):
+	def __init__(self, recorder: Recorder, fun: FitnessFunction2):
 		super(AlgorithmVisual, self).__init__()
 		self._recorder = recorder
+		self._fun = fun     # 适应度函数接口
 		self._plot_canvas()
 		self._visual()
 
@@ -298,7 +303,7 @@ class AlgorithmVisual(BaseVisual):
 			# 子图3：种群收敛过程可视化
 			self.swarm_ax = self._fig.add_subplot(self._gs[:, 0])
 			self.swarm_ln, = self.swarm_ax.plot(
-				[], [], linestyle=' ', marker='.', animated=False, alpha=0.9,
+				[], [], linestyle=' ', marker='.', color='black', animated=False,
 			)
 
 			return self.fit_ln, self.dim_ln, self.swarm_ln
@@ -334,7 +339,7 @@ class AlgorithmVisual(BaseVisual):
 		)
 		self.fit_ax.set_ylabel("Fitness", fontsize=14)
 		self.fit_ax.set_xlabel("Iteration", fontsize=14)
-		self.fit_ax.set_xlim(0, self.epoch * self.step)   # ################### 整理 epoch 和 rec_step 的接口
+		self.fit_ax.set_xlim(0, self.epoch * self.step)
 		self.fit_ax.set_ylim(1e-300, 1e2)
 		self.fit_ax.set_title(self._recorder.name, fontsize=14)
 		self.fit_ax.grid(True)
@@ -346,6 +351,7 @@ class AlgorithmVisual(BaseVisual):
 		self.dim_ax.grid(True)
 
 		if self.D == 2:
+			# 边界与标识线
 			self.swarm_ax.set_title("Particle swarm position", fontsize=14)
 			self.swarm_ax.set_xlabel("x1", fontsize=14)
 			self.swarm_ax.set_ylabel("x2", fontsize=14)
@@ -366,7 +372,33 @@ class AlgorithmVisual(BaseVisual):
 			ln.set_data(self.t[:epc], self.gbest[:epc, j])
 
 		if self.D == 2:
-			self.swarm_ln.set_data(self.pbest[epc, :, 0], self.pbest[epc, :, 1])
+
+			# 等高线
+			self.swarm_ax.cla()
+
+			global bound
+			bound = np.max([np.abs(self.pbest[epc, :, :]).max() * 1.2, 1e-30]) if epc % 5 == 0 else bound
+
+			self.swarm_ax.plot([-bound, bound], [0, 0], linestyle='--', color='grey', alpha=0.8)
+			self.swarm_ax.plot([0, 0], [-bound, bound], linestyle='--', color='grey', alpha=0.8)
+			self.swarm_ax.plot(
+				self.pbest[epc, :, 0], self.pbest[epc, :, 1],
+				linestyle=' ', marker='.', color='black', animated=False
+			)
+
+			x, y = np.meshgrid(np.linspace(-bound, bound, 50), np.linspace(-bound, bound, 50))
+			z = self._fun.infer(np.concatenate((x.reshape(-1, 1), y.reshape(-1, 1)), axis=1)).reshape(50, 50)
+			c = plt.contour(x, y, z, 8, alpha=0.6)
+			plt.clabel(c, inline=True, fontsize=12)
+			self.swarm_ax.set_xlim(-bound, bound)
+			self.swarm_ax.set_ylim(-bound, bound)
+			plt.xticks([-bound, 0, bound])
+			plt.yticks([-bound, 0, bound])
+
+
+
+			plt.axis('equal')
+
 			return self.fit_ln, self.dim_ln, self.swarm_ln
 		else:
 			return self.fit_ln, self.dim_ln
@@ -374,7 +406,7 @@ class AlgorithmVisual(BaseVisual):
 	def _visual(self):
 		_ani = FuncAnimation(
 			self._fig, self._update, frames=self.epoch,
-			init_func=self._init_func, blit=False, repeat=False, interval=10
+			init_func=self._init_func, blit=False, repeat=True, interval=100
 		)
 		plt.tight_layout()
 		# _ani.save("pbest.gif", fps=30)
