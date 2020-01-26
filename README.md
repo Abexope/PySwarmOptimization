@@ -30,4 +30,4 @@ $$
 
 - PSO:
 
-![](D:\PySwarmOptimization\doc\pso.gif)
+![](.\doc\pso.gif)
