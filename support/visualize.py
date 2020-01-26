@@ -394,9 +394,6 @@ class AlgorithmVisual(BaseVisual):
 			self.swarm_ax.set_ylim(-bound, bound)
 			plt.xticks([-bound, 0, bound])
 			plt.yticks([-bound, 0, bound])
-
-
-
 			plt.axis('equal')
 
 			return self.fit_ln, self.dim_ln, self.swarm_ln
@@ -406,7 +403,7 @@ class AlgorithmVisual(BaseVisual):
 	def _visual(self):
 		_ani = FuncAnimation(
 			self._fig, self._update, frames=self.epoch,
-			init_func=self._init_func, blit=False, repeat=True, interval=100
+			init_func=self._init_func, blit=False, repeat=False, interval=100
 		)
 		plt.tight_layout()
 		# _ani.save("pbest.gif", fps=30)
