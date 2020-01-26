@@ -28,3 +28,6 @@ $$
 
 ![](.\doc\pbest.png)
 
+- PSO:
+
+![](D:\PySwarmOptimization\doc\pso.gif)
