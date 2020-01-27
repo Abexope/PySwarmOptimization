@@ -99,14 +99,14 @@ class Recorder:
 		self.pbest_rec = PbestRecorder(alg_name, epoch, N, D, rec_step)
 		self.gbest_rec = GbestRecorder(alg_name, epoch, D, rec_step)
 		self.fitness_rec = FitnessRecorder(alg_name, epoch, rec_step)
-		self._name = alg_name
+		self._alg_name = alg_name
 		self._epoch = epoch
 		self._N = N
 		self._D = D
 		self._rec_step = rec_step
 
 	@property
-	def name(self): return self._name
+	def alg_name(self): return self._alg_name
 
 	@property
 	def t(self): return self.fitness_rec.t
