@@ -26,8 +26,7 @@ class Optimizer:
 		
 		self.pbest_fitness = self.fitness
 		self.gbest_fitness = np.min(self.fitness)
-		
-		self.yy = []
+
 		self.is_record = is_record
 		if is_record:
 			self.recoder = Recorder(self.name, self._epoch // self.rec_step, self.swarm.population, self.swarm.D, self.rec_step)  # 迭代记录器
@@ -66,4 +65,3 @@ class Optimizer:
 				self.recoder.pbest_rec.record(epc, self.swarm.pbest)
 				self.recoder.gbest_rec.record(epc, self.swarm.gbest)
 				self.recoder.fitness_rec.record(epc, self.gbest_fitness)
-			self.yy.append(self.gbest_fitness)
