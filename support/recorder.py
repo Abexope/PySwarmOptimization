@@ -122,3 +122,12 @@ class Recorder:
 
 	@property
 	def rec_step(self): return self._rec_step
+
+	@property
+	def fitness(self): return self.fitness_rec.doc
+
+	@property
+	def pbest(self): return self.pbest_rec.doc
+
+	@property
+	def gbest(self): return self.gbest_rec.doc

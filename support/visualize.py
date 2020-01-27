@@ -253,9 +253,9 @@ class AlgorithmVisual(BaseVisual):
 			cls.instance = super(AlgorithmVisual, cls).__new__(cls)     # 单例
 		return cls.instance
 
-	def __init__(self, recorder: Recorder, fun: FUNCTIONS, upper_bound: np.ndarray, lower_bound: np.ndarray, save=False):
+	def __init__(self, recorder: Recorder, fun: FUNCTIONS, upper_bound: np.ndarray, lower_bound: np.ndarray, is_save=False):
 		super(AlgorithmVisual, self).__init__()
-		self._save = save
+		self._is_save = is_save
 		self._upper = upper_bound
 		self._lower = lower_bound
 		self._recorder = recorder
@@ -362,8 +362,8 @@ class AlgorithmVisual(BaseVisual):
 
 			# 边界与标识线
 			self.swarm_ax.set_title("Pbest | fitness function: {}".format(self._fun.func_name), fontsize=14)
-			self.swarm_ax.set_xlabel("x1", fontsize=14)
-			self.swarm_ax.set_ylabel("x2", fontsize=14)
+			self.swarm_ax.set_xlabel("$x_{1}$", fontsize=14)
+			self.swarm_ax.set_ylabel("$x_{2}$", fontsize=14)
 			self.swarm_ax.set_xlim(self._lower[0], self._upper[0])
 			self.swarm_ax.set_ylim(self._lower[1], self._upper[1])
 			self.swarm_ax.plot([self._lower[0], self._upper[0]], [0, 0], linestyle='--', color='black', alpha=0.8)
@@ -409,8 +409,8 @@ class AlgorithmVisual(BaseVisual):
 			self.swarm_ax.set_xticks([-bound, 0, bound])
 			self.swarm_ax.set_yticks([-bound, 0, bound])
 			self.swarm_ax.set_title('Pbest | fitness function: {}'.format(self._fun.func_name), fontsize=14)
-			self.swarm_ax.set_xlabel('x1', fontsize=14)
-			self.swarm_ax.set_ylabel('x2', fontsize=14)
+			self.swarm_ax.set_xlabel('$x_{1}$', fontsize=14)
+			self.swarm_ax.set_ylabel('$x_{2}$', fontsize=14)
 			self.swarm_ax.grid(True)
 
 			plt.axis('equal')
@@ -425,7 +425,7 @@ class AlgorithmVisual(BaseVisual):
 			init_func=self._init_func, blit=False, repeat=False, interval=100
 		)
 		plt.tight_layout()
-		if self._save:
-			_ani.save("pbest.gif", fps=30)
+		if self._is_save:
+			_ani.save("swarm_opt.gif", fps=30)
 		else:
 			plt.show()
