@@ -2,14 +2,14 @@
 搜索过程可视化
 """
 
-from evaluator.base import FitnessFunction2
+from evaluator.base import FUNCTIONS
 from .recorder import Recorder
 from abc import ABCMeta, abstractmethod
 import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.gridspec as mg
 from matplotlib.animation import FuncAnimation
-# plt.style.use('ggplot')
+
 
 global bound
 
@@ -248,8 +248,16 @@ class AlgorithmVisual(BaseVisual):
 	包括适应度值变化，每个维度的搜索变化，每个个体的坐标变化(仅限2D情况)
 	"""
 
-	def __init__(self, recorder: Recorder, fun: FitnessFunction2):
+	def __new__(cls, *args, **kwargs):
+		if not hasattr(cls, 'instance'):
+			cls.instance = super(AlgorithmVisual, cls).__new__(cls)     # 单例
+		return cls.instance
+
+	def __init__(self, recorder: Recorder, fun: FUNCTIONS, upper_bound: np.ndarray, lower_bound: np.ndarray, save=False):
 		super(AlgorithmVisual, self).__init__()
+		self._save = save
+		self._upper = upper_bound
+		self._lower = lower_bound
 		self._recorder = recorder
 		self._fun = fun     # 适应度函数接口
 		self._plot_canvas()
@@ -341,7 +349,7 @@ class AlgorithmVisual(BaseVisual):
 		self.fit_ax.set_xlabel("Iteration", fontsize=14)
 		self.fit_ax.set_xlim(0, self.epoch * self.step)
 		self.fit_ax.set_ylim(1e-300, 1e2)
-		self.fit_ax.set_title(self._recorder.name, fontsize=14)
+		self.fit_ax.set_title(self._recorder.alg_name, fontsize=14)
 		self.fit_ax.grid(True)
 
 		self.dim_ax.set_ylabel("Global best", fontsize=14)
@@ -351,16 +359,21 @@ class AlgorithmVisual(BaseVisual):
 		self.dim_ax.grid(True)
 
 		if self.D == 2:
+
 			# 边界与标识线
-			self.swarm_ax.set_title("Particle swarm position", fontsize=14)
+			self.swarm_ax.set_title("Pbest | fitness function: {}".format(self._fun.func_name), fontsize=14)
 			self.swarm_ax.set_xlabel("x1", fontsize=14)
 			self.swarm_ax.set_ylabel("x2", fontsize=14)
-			self.swarm_ax.set_xlim(-1, 1)
-			self.swarm_ax.set_ylim(-1, 1)
-			# self.swarm_ax.grid(True)
+			self.swarm_ax.set_xlim(self._lower[0], self._upper[0])
+			self.swarm_ax.set_ylim(self._lower[1], self._upper[1])
+			self.swarm_ax.plot([self._lower[0], self._upper[0]], [0, 0], linestyle='--', color='black', alpha=0.8)
+			self.swarm_ax.plot([0, 0], [self._lower[1], self._upper[1]], linestyle='--', color='black', alpha=0.8)
 
-			self.swarm_ax.plot([-1, 1], [0, 0], linestyle='--', color='black', alpha=0.8)
-			self.swarm_ax.plot([0, 0], [-1, 1], linestyle='--', color='black', alpha=0.8)
+			# 初始等高线
+			x, y = np.meshgrid(np.linspace(self._lower[0], self._upper[0], 50), np.linspace(self._lower[1], self._upper[1], 50))
+			z = self._fun.infer(np.concatenate((x.reshape(-1, 1), y.reshape(-1, 1)), axis=1)).reshape(50, 50)
+			c = plt.contour(x, y, z, 8, alpha=0.6)
+			plt.clabel(c, inline=True, fontsize=12)
 
 			return self.fit_ln, self.dim_ln, self.swarm_ln
 		else:
@@ -390,10 +403,16 @@ class AlgorithmVisual(BaseVisual):
 			z = self._fun.infer(np.concatenate((x.reshape(-1, 1), y.reshape(-1, 1)), axis=1)).reshape(50, 50)
 			c = plt.contour(x, y, z, 8, alpha=0.6)
 			plt.clabel(c, inline=True, fontsize=12)
+
 			self.swarm_ax.set_xlim(-bound, bound)
 			self.swarm_ax.set_ylim(-bound, bound)
-			plt.xticks([-bound, 0, bound])
-			plt.yticks([-bound, 0, bound])
+			self.swarm_ax.set_xticks([-bound, 0, bound])
+			self.swarm_ax.set_yticks([-bound, 0, bound])
+			self.swarm_ax.set_title('Pbest | fitness function: {}'.format(self._fun.func_name), fontsize=14)
+			self.swarm_ax.set_xlabel('x1', fontsize=14)
+			self.swarm_ax.set_ylabel('x2', fontsize=14)
+			self.swarm_ax.grid(True)
+
 			plt.axis('equal')
 
 			return self.fit_ln, self.dim_ln, self.swarm_ln
@@ -406,5 +425,7 @@ class AlgorithmVisual(BaseVisual):
 			init_func=self._init_func, blit=False, repeat=False, interval=100
 		)
 		plt.tight_layout()
-		# _ani.save("pbest.gif", fps=30)
-		plt.show()
+		if self._save:
+			_ani.save("pbest.gif", fps=30)
+		else:
+			plt.show()
