@@ -133,76 +133,124 @@ $$
 f(x_1,···,x_D)=0.5+\frac{\sin^2({\sum_{j=1}^{D}{x_j^2}})-0.5}{(1+0.001\sum_{j=1}^{D}{x_j^2})^2}
 $$
 
-**模板类**
+**调用**
 
 ```python
-class FitnessFunction(metaclass=ABCMeta):
-
-	func_name = None
-
-	@staticmethod
-	@abstractmethod
-	def infer(x):
-		pass
+from evaluator.base import Sphere
+y = Sphere.infer(x)
+# x：轴为2的numpy数组，第0个轴表示粒子群总数，第1个轴表示优化问题目标函数的维度
+# y：目标函数输出，标量
 ```
-
-
 
 ### 2.2 swarm
 
-模板类
+- PSO
 
+```python
+from swarm.particle import ParticleSwarm
+import numpy as np
+swarm = ParticleSwarm(
+	dimension=2,						# 维数
+    population=50,						# 种群规模
+    upper_bound=np.array([10, 10]),			# 搜索范围上界，数组中元素数量必须与维数相同
+    lower_bound=np.array([-10, -10]),		# 搜索范围下界
+    upper_velocity=np.array([1, 1]),		# 速度范围上界
+    lower_velocity=np.array([-1, -1]),		# 速度范围下届
+    acceleration_coeff1=2.,					# 加速系数1
+    acceleration_coeff2=2.,					# 加速系数2
+)	# 粒子群实例化
+```
 
+- QPSO
+
+```python
+from swarm.particle import QuantumParticleSwarm as QPS
+import numpy as np
+swarm = QPS(
+	dimension=2, population=50,		
+    upper_bound=np.array([10, 10]),	lower_bound=np.array([-10, -10]),	
+)	# 量子行为粒子群实例化
+```
+
+- RQPSO
+
+```python
+from swarm.particle import RevisedQuantumParticleSwarm as RQPS
+import numpy as np
+swarm = RQPS(
+	dimension=2, population=50,		
+    upper_bound=np.array([10, 10]),	lower_bound=np.array([-10, -10]),	
+)	# 混合量子行为粒子群实例化
+```
 
 ### 2.3 optimizer
 
-
+```python
+from swarm.particle import QuantumParticleSwarm as QPS
+from evaluator.base import Sphere
+from optimizer.pso import Optimizer
+import numpy as np
+swarm = QPS(
+	dimension=2, population=50,		
+    upper_bound=np.array([10, 10]),	lower_bound=np.array([-10, -10]),	
+)	# 量子行为粒子群实例化
+opt = Optimizer(
+	epoch=100,	# 算法迭代次数
+    swarm=swarm, evaluator=Sphere, is_record=False
+)
+opt.fit()
+print(opt.swarm.gbest)		# 全局最优个体位置
+print(opt.gbest_fitness)	# 全局最优适应度值
+```
 
 ### 2.4 support
 
 #### 2.4.1 recoder.py
 
-模板类
+recoder.py实现迭代过程的记录
 
-
+```python
+from swarm.particle import QuantumParticleSwarm as QPS
+from evaluator.base import Sphere
+from optimizer.pso import Optimizer
+import numpy as np
+swarm = QPS(
+	dimension=2, population=50,		
+    upper_bound=np.array([10, 10]),	lower_bound=np.array([-10, -10]),	
+)	# 量子行为粒子群实例化
+opt = Optimizer(
+	epoch=100,	# 算法迭代次数
+    swarm=swarm, evaluator=Sphere, is_record=True,
+    rec_step=1,	# 记录步长，每隔多少步记录一次当前优化器和种群的各项属性，取值必须能够整除epoch
+)
+opt.fit()
+print(opt.recoder.fitness)	# 适应度值收敛过程
+print(opt.recoder.gbest)	# 全局最优收敛过程
+print(opt.recoder.pbest)	# 个体最优收敛过程
+```
 
 #### 2.4.2 visualize.py
 
-模板类
+visualize.py实现recoder对象中保存记录的动态可视化
 
+```python
+from support.visualize import AlgorithmVisual
+AlgorithmVisual(
+    recoder=opt.recoder,
+    fun=Sphere,
+    upper_bound=np.array([10, 10])
+    lower_bound=np.array([-10, -10])
+    is_save=False	# 是否保存动态变化结果。True则保存gif格式，不可视化，False则做动态可视化，不保存
+)
+```
 
+![](\doc\pso.gif)
 
-
-
-
+![](.\doc\qpso.gif)
 
 ## 3. 测试样例
 
-
-
-
-
-
-
-
-
-
-
-
-
-目前已经开发的算法包括：
-
-- 粒子群算法(Particle Swarm Optimization，PSO)
-- 量子行为粒子群算法(Quantum-behaved Particle Swarm Optimization，QPSO)
-- 混合量子行为粒子群算法(Revised Quantum-behaved Particle Swarm Optimization，RQPSO)
-
-一些可视化结果：
-
-- 优化目标函数：
-
-$$
-\min f(\mathbf{x})=\mathbf{x^Tx}
-$$
+以Sphere函数为例，一些可视化结果：
 
 - 全局最优收敛过程示意
 
@@ -211,7 +259,3 @@ $$
 - 种群搜索过程示意
 
 ![](.\doc\pbest.png)
-
-- PSO:
-
-![](.\doc\pso.gif)
