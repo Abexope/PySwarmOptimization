@@ -57,12 +57,12 @@ $$
 
 在量子力学中，使用粒子的束缚态来刻画粒子群的聚集性/收敛性。产生束缚态的原因是在粒子运动的中心存在某种吸引势场。为此可以建立一个量子化的吸引势场，从而束缚粒子个体以使群体具呈现出聚集性。刻画粒子的收敛过程是以 $pbest$ 和 $gbest$ 做随机加权得到的位置向量作为吸引点
 $$
-p_{i,j}(t)=\phi_{i,j}(t)·P_{i,j}(t)+(1-\phi_{i,j}(t)·G_j(t)) \\
+p_{i,j}(t)=\phi_{i,j}(t)·P_{i,j}(t)+(1-\phi_{i,j}(t))·G_j(t) \\
 \phi_{i,j}(t) \sim \text{U}(0, 1)
 $$
 粒子的进化表现为受到粒子的吸引，进化方程为
 $$
-X_{i,j}(t+1)=p_{i,j}(t) \pm \alpha·\lvert C_j(t) - X_{i,j}(t) \rvert ·\ln[\frac{1}{u_{i,j}(t)}]
+X_{i,j}(t+1)=p_{i,j}(t) \pm \alpha·\lvert C_j(t) - X_{i,j}(t) \rvert ·\ln[{1}/{u_{i,j}(t)}]
 $$
 其中
 $$
@@ -74,12 +74,12 @@ $$
 
 QPSO算法的进化方程可以归纳为
 $$
-X_{i,j}(t+1)=p_{i,j}(t) \pm \alpha·\lvert C_j(t) - X_{i,j}(t) \rvert ·\ln[\frac{1}{u_{i,j}(t)}] \\
+X_{i,j}(t+1)=p_{i,j}(t) \pm \alpha·\lvert C_j(t) - X_{i,j}(t) \rvert ·\ln[{1}/{u_{i,j}(t)}] \\
 =p_{i,j}(t)+A_{i,j}(t)
 $$
 其中
 $$
-A_{i,j}(t)=\pm \alpha·\lvert C_j(t) - X_{i,j}(t) \rvert ·\ln[\frac{1}{u_{i,j}(t)}]
+A_{i,j}(t)=\pm \alpha·\lvert C_j(t) - X_{i,j}(t) \rvert ·\ln[{1}/{u_{i,j}(t)}]
 $$
 相当于一个服从拉普拉斯分布的随机变量。所以，一种提升QPSO算法收敛性能的思想是提升算法在进化过程中的不确定性。令
 $$
@@ -87,21 +87,64 @@ A_{i,j}(t)=a_{i,j}(t)+b_{i,j}(t)
 $$
 其中
 $$
-a_{i,j}(t)=\pm \alpha·\lvert C_j(t) - X_{i,j}(t) \rvert ·\ln[\frac{1}{u_{i,j}(t)}] \\
-b_{i,j}(t)=\beta·\lvert C_{i,j}(t)-X_{i,j}(t) \rvert · n(t) \\
+a_{i,j}(t)=\pm \alpha·\lvert p_{i,j}(t) - X_{i,j}(t) \rvert ·\ln[{1}/{u_{i,j}(t)}] \\
+b_{i,j}(t)=\beta·\lvert C_{j}(t)-X_{i,j}(t) \rvert · n(t) \\
 n(t) \sim \text N(0,1)
 $$
 进化方程改进为
 $$
-X_{i,j}(t+1)=p_{i,j}(t) \pm \alpha·\lvert C_j(t) - X_{i,j}(t) \rvert ·\ln[\frac{1}{u_{i,j}(t)}]+\beta·\lvert C_{i,j}(t)-X_{i,j}(t) \rvert · n(t)
+X_{i,j}(t+1)=p_{i,j}(t) \pm \alpha·\lvert p_{i,j}(t) - X_{i,j}(t) \rvert ·\ln[{1}/{u_{i,j}(t)}]+\beta·\lvert C_{j}(t)-X_{i,j}(t) \rvert · n(t)
 $$
 采用此种进化方程的算法被称之为具有混合概率分布的量子行为粒子群优化(Revised Quantum-behaved Particle Swarm Optimization, RQPSO)算法。
 
 ## 2 代码架构
 
-### 2.1 evaluator
+### 2.1 evaluator - base.py
 
-模板类
+base.py文件中包含验证非线性优化算法性能的若干多元非线性函数。目前收录的函数有：
+
+- Sphere函数
+
+$$
+f(x_1,···,x_D)=\sum_{j=1}^{D}{x_j^2}
+$$
+
+- Rastrigrin函数
+
+$$
+f(x_1,···,x_D)=\sum_{j=1}^{D}{[x_j^2-10\cos(2 \pi x_j) + 10]}
+$$
+
+- Rosenbrock函数
+
+$$
+f(x_1,···,x_D)=\sum_{j=1}^{D-1}{[(1-x_j)^2+100(x_j - x_{j+1}^2)^2]}
+$$
+
+- Griewank函数
+
+$$
+f(x_1,···,x_D)=\frac{\sum_{j=1}^{D}{x_j^2}}{4000-\prod_{j=1}^{D}{\cos(x/\sqrt{j+1})}}
+$$
+
+- Schaffer函数
+
+$$
+f(x_1,···,x_D)=0.5+\frac{\sin^2({\sum_{j=1}^{D}{x_j^2}})-0.5}{(1+0.001\sum_{j=1}^{D}{x_j^2})^2}
+$$
+
+**模板类**
+
+```python
+class FitnessFunction(metaclass=ABCMeta):
+
+	func_name = None
+
+	@staticmethod
+	@abstractmethod
+	def infer(x):
+		pass
+```
 
 
 
