@@ -244,11 +244,9 @@ AlgorithmVisual(
 )
 ```
 
-![](\doc\pso.gif)
-
-![](.\doc\qpso.gif)
-
 ## 3. 测试样例
+
+### 3.1 多算法对比示例
 
 以Sphere函数为例，一些可视化结果：
 
@@ -259,3 +257,61 @@ AlgorithmVisual(
 - 种群搜索过程示意
 
 ![](.\doc\pbest.png)
+
+### 3.2 多种适应度函数搜索过程动态可视化
+
+#### 3.2.1 Sphere 函数
+
+- PSO算法
+
+![](.\doc\Sphere-PSO.gif)
+
+- QPSO算法
+
+![](.\doc\Sphere-QPSO.gif)
+
+- RQPSO算法
+
+![](.\doc\Sphere-RQPSO.gif)
+
+#### 3.2.2 Rastrigrin 函数
+
+- PSO算法
+
+![](.\doc\Rastrigrin-PSO.gif)
+
+- QPSO算法
+
+![](.\doc\Rastrigrin-QPSO.gif)
+
+- RQPSO算法
+
+![](.\doc\Rastrigrin-RQPSO.gif)
+
+#### 3.2.3 Schaffer 函数
+
+- PSO算法
+
+![](.\doc\Schaffer-PSO.gif)
+
+- QPSO函数
+
+![](.\doc\Schaffer-QPSO.gif)
+
+- RQPSO算法
+
+![](.\doc\Schaffer-RQPSO.gif)
+
+#### 3.2.4 Griewank 函数
+
+- PSO算法
+
+![](.\doc\Griewank-PSO.gif)
+
+- QPSO算法
+
+![](.\doc\Griewank-QPSO.gif)
+
+- RQPSO算法
+
+![](.\doc\Griewank-RQPSO.gif)
